@@ -1,0 +1,95 @@
+{% extends "layout.html" %} 
+
+{% block body %}
+<form role="form" action="/student/add" method="post">
+	<div>
+  	 <input type="hidden" data-sex="{{students.gender}}" data-hobby="{{students.hobby}}" id="hidden"/>
+  	 <input type="hidden"  name="id" value="{{students._id}}"/>
+  </div>
+  <div class="form-group">
+    <label for="">姓名</label>
+    <input type="text" class="form-control" placeholder="请输入学生姓名" name="name" value="{{students.name}}">
+  </div>
+  
+  <div class="form-group">
+    <label for="">年龄</label>
+    <input type="number" class="form-control" placeholder="请输入学生年龄" name="age" value="{{students.age}}">
+  </div>
+  <div class="form-group">
+    <label for="">性别</label><br />
+    <input type="radio"   name="gender" value="男" id="boy">男&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="radio"   name="gender" value="女" id="girl">女
+  </div>
+  <div class="form-group">
+    <label for="">学号</label>
+    <input type="number" class="form-control" placeholder="请输入学生学号" name="stu_id" value="{{students.stu_id}}">
+  </div>
+  <div class="form-group">
+    <label for="">qq</label>
+    <input type="number" name="qq" placeholder="请输入学生qq号" class="form-control" value="{{students.qq}}">
+  </div>
+  <div class="form-group" id="check">
+    <label for="">爱好</label>
+    <input type="checkbox" name="hobby" value="吃饭" id="c1">吃饭
+    <input type="checkbox" name="hobby" value="户外" id="c2">户外
+    <input type="checkbox" name="hobby" value="打代码" id="c3">打代码
+    <input type="checkbox" name="hobby" value="干活" id="c4">干活
+    <input type="checkbox" name="hobby" value="睡觉" id="c5">睡觉
+    <input type="checkbox" name="hobby" value="打豆豆" id="c6">打豆豆
+  </div>
+  <div class="form-group">
+    <label for="">家庭住址</label>
+    <input type="text" name="address" placeholder="请输入学生家庭住址" class="form-control" value="{{students.address}}">
+  </div>
+  <button type="submit" class="btn btn-success">添加保存</button>
+</form>
+{% endblock %} {% block script %}
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+	//根据隐藏域的值 判断 单选复选框
+	if ($('#hidden').attr('data-sex') == '男'){
+		$('#boy').attr({checked:'checked'});
+	} else{
+		$('#girl').attr({checked:'checked'});
+	}
+	var arr = $('#hidden').attr('data-hobby').split(',');
+	for( var i = 0; i< arr.length ;i++){
+		if(arr[ i ] == '吃饭'){
+			$('#c1').attr({checked:'checked'})
+		} else if ( arr[ i ] == '户外'){
+			$('#c2').attr({checked:'checked'})
+		} else if ( arr[ i ] == '打代码'){
+			$('#c3').attr({checked:'checked'})
+		} else if ( arr[ i ] == '干活'){
+			$('#c4').attr({checked:'checked'})
+		} else if ( arr[ i ] == '睡觉'){
+			$('#c5').attr({checked:'checked'})
+		} else if ( arr[ i ] == '打豆豆'){
+			$('#c6').attr({checked:'checked'})
+		} 
+	}
+$('form').on('submit', function (e) {
+    e.preventDefault()
+      // 在这里去做表单基本验证
+    $.ajax({
+      url: '/student/update',
+      type: 'post',
+      // jQuery 中的表单序列化方法会自动将表单中具有name 的 input 提取为查询字符串的形式
+      // data 参数可以指定一个查询字符串，也可以指定一个对象
+      // 如果指定了查询字符串，则 jQuery 直接将查询字符串放到请求中发送
+      // 如果指定了对象，则 jQuery 帮你再把对象转为 查询字符串然后发起请求
+      data: $(this).serialize(),
+      dataType: 'json',
+      success: function (data) {
+        var code = data.code
+        if (code === 3000) {
+          // 客户端跳转，取决于前端开发工程师
+          window.location.href = '/student'
+        } else if (code === 3001) {
+          window.alert('添加失败了')
+        }
+      }
+    })
+})
+</script>
+{% endblock %}

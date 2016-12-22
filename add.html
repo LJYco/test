@@ -1,0 +1,71 @@
+{% extends "layout.html" %} 
+
+{% block body %}
+<form role="form" action="/product/add" method="post">
+  <div class="form-group">
+    <label for="">姓名</label>
+    <input type="text" class="form-control" placeholder="请输入学生姓名" name="name">
+  </div>
+  <div class="form-group">
+    <label for="">年龄</label>
+    <input type="number" class="form-control" placeholder="请输入学生年龄" name="age">
+  </div>
+  <div class="form-group">
+    <label for="">性别</label><br />
+    <input type="radio"   name="gender" value="男" checked>男&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="radio"   name="gender" value="女">女
+  </div>
+  <div class="form-group">
+    <label for="">学号</label>
+    <input type="number" class="form-control" placeholder="请输入学生学号" name="stu_id">
+  </div>
+  <div class="form-group">
+    <label for="">qq</label>
+    <input type="number" name="qq" placeholder="请输入学生qq号" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">爱好</label>
+    <input type="checkbox" name="hobby" value="吃饭">吃饭
+    <input type="checkbox" name="hobby" value="户外">户外
+    <input type="checkbox" name="hobby" value="打代码" checked>打代码
+    <input type="checkbox" name="hobby" value="干活">干活
+    <input type="checkbox" name="hobby" value="睡觉">睡觉
+    <input type="checkbox" name="hobby" value="打豆豆">打豆豆
+  </div>
+  <div class="form-group">
+    <label for="">家庭住址</label>
+    <input type="text" name="address" placeholder="请输入学生家庭住址" class="form-control">
+  </div>
+  <button type="submit" class="btn btn-success">添加保存</button>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+  $('form').on('submit', function (e) {
+    e.preventDefault()
+		console.log( $(this).serialize()  )
+    // 在这里去做表单基本验证
+    $.ajax({
+      url: '/student/add',
+      type: 'post',
+      // jQuery 中的表单序列化方法会自动将表单中具有name 的 input 提取为查询字符串的形式
+      // data 参数可以指定一个查询字符串，也可以指定一个对象
+      // 如果指定了查询字符串，则 jQuery 直接将查询字符串放到请求中发送
+      // 如果指定了对象，则 jQuery 帮你再把对象转为 查询字符串然后发起请求
+      data: $(this).serialize(),
+      dataType: 'json',
+      success: function (data) {
+        var code = data.code
+        if (code === 2000) {
+          // 客户端跳转，取决于前端开发工程师
+          window.location.href = '/student'
+        } else if (code === 2001) {
+          window.alert('添加失败了')
+        }
+      }
+    })
+  })
+</script>
+{% endblock %}
+

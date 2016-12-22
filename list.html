@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<a href="/student/add" class="btn btn-success btn-large">添加学生</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>姓名</th>
+      <th>年龄</th>
+      <th>性别</th>
+      <th>学号</th>
+      <th>qq</th>
+      <th>爱好</th>
+      <th>地址</th>
+    </tr>
+  </thead>
+  <tbody id="tbody">
+  </tbody>
+</table>
+{% endblock %} 
+
+{% block script %}
+<script type="text/tpl" id="tpl">
+  <% students.forEach(function (student, index) { %>
+    <tr>
+      <td>
+        <%= index+1 %>
+      </td>
+      <td>
+        <%= student.name %>
+      </td>
+      <td>
+        <%= student.age %>
+      </td>
+      <td>
+        <%= student.gender %>
+      </td>
+      <td>
+        <%= student.stu_id %>
+      </td><td>
+        <%= student.qq %>
+      </td><td>
+        <%= student.hobby %>
+      </td><td>
+        <%= student.address %>
+      </td>
+      <td>
+        <a href="/student/edit?id=<%= student._id %>" id="edit">编辑</a>
+        <a class="remove" data-id="<%= student._id %>" href="#">删除</a>
+      </td>
+    </tr>
+    <% }) %>
+</script>
+<script>
+  loadData()
+
+  function loadData() {
+    $.ajax({
+      url: '/student/list',
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+      	data = data || [];
+      	for( var i = 0; i < data.length ; i++){
+      		for( var key in data[i]){
+      			if( typeof data[i][key] =='object'){
+      				data[i][key] = data[i][key].join(' ')
+      			}
+      		}
+      	}
+      	
+				console.log( data )
+       $('#tbody').html(template('tpl', {
+          students: data
+        }))       
+      }
+    })
+  }
+
+  // ajax click
+  // 利用事件代理的形式给动态加载的 DOM 元素注册点击事件
+	$('body').on('click', '.remove', function (e) {
+	    e.preventDefault()
+	    if (window.confirm('尊贵的用户,您好,你真的要删除吗? 另外 董小姐征婚..欲征从速,联系电话,110-转-114')) {
+	      $.ajax({
+	        url: '/student/remove/' + $(this).data('id'),
+	        type: 'get',
+	        dataType: 'json',
+	        success: function (data) {
+	          var code = data.code
+	          if (code === 1000) {
+	            // 做删除成功的处理
+	            loadData()
+	          } else if (code === 1001) {
+	            window.alert('删除失败了')
+	          }
+	        }
+	      })
+	    }
+	})
+//	$('body').on('click','#edit',function  (e) {
+//		e.preventDefault();
+//		
+//	})
+</script>
+{% endblock %}
